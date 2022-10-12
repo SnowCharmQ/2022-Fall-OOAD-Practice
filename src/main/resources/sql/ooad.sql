@@ -8,6 +8,7 @@ create table t_user
 drop table if exists t_course;
 create table t_course
 (
+    course_id       varchar primary key,
     course_name     varchar,
     code            varchar,
     course_language varchar,
@@ -18,7 +19,7 @@ create table t_course
 );
 
 insert into t_course
-values ('OOAD', 'CS309', 'English', 'zyq', current_timestamp, 'Hall', 3.0);
+values ('1', 'OOAD', 'CS309', 'English', 'zyq', current_timestamp, 'Hall', 3.0);
 
 select *
 from t_course;

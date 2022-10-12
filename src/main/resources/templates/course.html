@@ -38,14 +38,26 @@
                     Edit
                 </button>
             </th>
+            <script th:inline="javascript">
+                $(".delete-btn").click(function () {
+                    let courseId = [[${course.getCourseId()}]].toString();
+                    $.ajax({
+                        url: "delete",
+                        type: "GET",
+                        data: {keyword: courseId},
+                        dataType: "json",
+                        success: function (json) {
+                            if (json.state === 200){
+                                alert("Successfully Delete!");
+                                location.href = "course.html";
+                            }
+                        }
+                    })
+                })
+            </script>
         </tr>
     </table>
+    <br/>
+    <button type="button">Add Class</button>
 </body>
-<script type="text/javascript">
-    $(".delete-btn").click(function () {
-        let del_parent = $(this).parent();
-        alert(del_parent)
-    })
-
-</script>
 </html>
