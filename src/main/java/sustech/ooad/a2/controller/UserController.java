@@ -71,7 +71,7 @@ public class UserController {
                 return "redirect:login.html";
             } else {
                 session.setAttribute("username", user.getUsername());
-                return "redirect:course.html";
+                return "redirect:/course/course.html";
             }
         } else {
             attributes.addFlashAttribute("errors", errors);

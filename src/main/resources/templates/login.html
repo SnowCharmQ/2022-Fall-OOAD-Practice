@@ -5,12 +5,13 @@
     <title>Login</title>
 </head>
 <body>
-<form action="/user/reg" method="post">
+<form action="/user/login" method="post">
     <label>Username </label><label><input type="text" placeholder="Username" name="username"></label><br/>
     <p th:text="${errors!=null?(#maps.containsKey(errors, 'user')?errors.user:''):''}" style="color: red;"></p><br/>
     <label>Password </label><label><input type="password" placeholder="Password" name="pwd"></label><br/>
     <p th:text="${errors!=null?(#maps.containsKey(errors, 'pwd')?errors.pwd:''):''}" style="color: red;"></p><br/>
     <button type="submit">Login</button>
+    <p th:text="${errors!=null?(#maps.containsKey(errors, 'check')?errors.check:''):''}" style="color: red;"></p><br/>
     <a href="reg.html">Register now</a>
 </form>
 </body>
