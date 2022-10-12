@@ -13,8 +13,6 @@ public class UserEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @TableId
-    Integer userId;
     String username;
     String pwd;
 }

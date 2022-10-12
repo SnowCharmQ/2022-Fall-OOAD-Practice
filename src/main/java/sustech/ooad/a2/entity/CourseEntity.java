@@ -15,8 +15,6 @@ public class CourseEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @TableId
-    Integer courseId;
     String courseName;
     String code;
     String courseLanguage;

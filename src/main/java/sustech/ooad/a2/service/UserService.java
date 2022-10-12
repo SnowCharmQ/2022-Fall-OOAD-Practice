@@ -5,4 +5,5 @@ import sustech.ooad.a2.entity.UserEntity;
 
 public interface UserService extends IService<UserEntity> {
 
+    boolean checkUsername(String username);
 }
