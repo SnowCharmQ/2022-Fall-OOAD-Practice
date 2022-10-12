@@ -15,6 +15,7 @@ public class LoginInterceptorConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         HandlerInterceptor interceptor = new LoginInterceptor();
         List<String> patterns = new ArrayList<>();
+        patterns.add("/course/bootstrap3/**");
         patterns.add("/user/reg");
         patterns.add("/user/reg.html");
         patterns.add("/user/login");

@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Course</title>
+    <script src="/bootstrap3/js/holder.js"></script>
+    <script src="/bootstrap3/jquery-1.9.1.min.js"></script>
+    <script src="/bootstrap3/js/bootstrap.js"></script>
 </head>
 <body>
     <h1>Open Courses</h1>
@@ -28,14 +31,21 @@
             <th th:text="${course.getCourseLocation()}"></th>
             <th th:text="${course.getDuration()} + 'h'"></th>
             <th>
-                <button type="button">
+                <button type="button" class="delete-btn">
                     Delete
                 </button>
-                <button type="button">
+                <button type="button" class="edit-btn">
                     Edit
                 </button>
             </th>
         </tr>
     </table>
 </body>
+<script type="text/javascript">
+    $(".delete-btn").click(function () {
+        let del_parent = $(this).parent();
+        alert(del_parent)
+    })
+
+</script>
 </html>
