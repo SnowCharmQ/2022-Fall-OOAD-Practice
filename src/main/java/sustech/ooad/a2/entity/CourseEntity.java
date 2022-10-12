@@ -22,5 +22,14 @@ public class CourseEntity implements Serializable {
     String courseLanguage;
     String teacher;
     Timestamp courseTime;
+    String courseLocation;
     Double duration;
+
+    public String getDate() {
+        return this.courseTime.toString().split(" ")[0];
+    }
+
+    public String getTime() {
+        return this.courseTime.toString().split(" ")[1].split("\\.")[0];
+    }
 }

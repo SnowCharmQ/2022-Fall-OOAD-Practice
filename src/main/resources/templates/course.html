@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Course</title>
+</head>
+<body>
+    <h1>Open Courses</h1>
+    <table border="1">
+        <tr>
+            <th>Course Name</th>
+            <th>Course Code</th>
+            <th>Language</th>
+            <th>Teacher</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Duration</th>
+            <th>Operation</th>
+        </tr>
+        <tr th:each="course: ${courses}">
+            <th th:text="${course.getCourseName()}"></th>
+            <th th:text="${course.getCode()}"></th>
+            <th th:text="${course.getCourseLanguage()}"></th>
+            <th th:text="${course.getTeacher()}"></th>
+            <th th:text="${course.getDate()}"></th>
+            <th th:text="${course.getTime()}"></th>
+            <th th:text="${course.getCourseLocation()}"></th>
+            <th th:text="${course.getDuration()} + 'h'"></th>
+            <th>
+                <button type="button">
+                    Delete
+                </button>
+                <button type="button">
+                    Edit
+                </button>
+            </th>
+        </tr>
+    </table>
+</body>
+</html>
