@@ -11,6 +11,7 @@ import sustech.ooad.a2.entity.UserEntity;
 import sustech.ooad.a2.service.UserService;
 import sustech.ooad.a2.vo.RegVo;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +51,30 @@ public class UserController {
             entity.setUsername(user.getUsername());
             entity.setPwd(user.getPwd());
             userService.save(entity);
+            return "redirect:login.html";
+        }
+    }
+
+    @PostMapping("/login")
+    public String login(UserEntity user, RedirectAttributes attributes, HttpSession session) {
+        Map<String, String> errors = new HashMap<>();
+        if (user.getUsername() == null || StringUtils.isEmpty(user.getUsername())){
+            errors.put("user", "Please enter your username");
+        }
+        if (user.getPwd() == null || StringUtils.isEmpty(user.getPwd())){
+            errors.put("pwd", "Please enter your password");
+        }
+        if (errors.isEmpty()) {
+            if (userService.checkLogin(user)){
+                errors.put("check", "Wrong username or password");
+                attributes.addFlashAttribute("errors", errors);
+                return "redirect:login.html";
+            } else {
+                session.setAttribute("username", user.getUsername());
+                return "redirect:course.html";
+            }
+        } else {
+            attributes.addFlashAttribute("errors", errors);
             return "redirect:login.html";
         }
     }

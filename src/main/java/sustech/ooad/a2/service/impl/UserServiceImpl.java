@@ -7,6 +7,8 @@ import sustech.ooad.a2.entity.UserEntity;
 import sustech.ooad.a2.mapper.UserDao;
 import sustech.ooad.a2.service.UserService;
 
+import java.util.Objects;
+
 @Service("UserService")
 public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService {
 
@@ -14,5 +16,14 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public boolean checkUsername(String username) {
         UserEntity entity = this.baseMapper.selectOne(new QueryWrapper<UserEntity>().eq("username", username));
         return entity != null;
+    }
+
+    @Override
+    public boolean checkLogin(UserEntity user) {
+        UserEntity one = this.baseMapper.selectOne(new QueryWrapper<UserEntity>().eq("username", user.getUsername()));
+        if (one == null) {
+            return true;
+        }
+        return !Objects.equals(user.getPwd(), one.getPwd());
     }
 }

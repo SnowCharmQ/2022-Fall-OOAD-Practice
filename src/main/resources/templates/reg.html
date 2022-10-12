@@ -13,6 +13,7 @@
     <label>Confirm Password </label><label><input type="password" placeholder="Confirm Password" name="confirmPwd"></label><br/>
     <p th:text="${errors!=null?(#maps.containsKey(errors, 'confirmPwd')?errors.confirmPwd:''):''}" style="color: red;"></p><br/>
     <button type="submit">Register</button>
+    <a href="login.html">Return to login</a>
 </form>
 </body>
 </html>
