@@ -6,58 +6,106 @@
     <script src="/bootstrap3/js/holder.js"></script>
     <script src="/bootstrap3/jquery-1.9.1.min.js"></script>
     <script src="/bootstrap3/js/bootstrap.js"></script>
+    <script src="/3.1.1/layer.js"></script>
 </head>
+<style>
+    #addClassDialog {
+        display: none;
+    }
+
+    #addClassDialog button {
+        width: 200px;
+        height: 40px;
+        background: #00897B;
+        display: block;
+        font-size: 16px;
+        color: #fff;
+        line-height: 50px;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .add-item {
+        width: 400px;
+        height: 46px;
+    }
+</style>
 <body>
-    <h1>Open Courses</h1>
-    <table border="1">
-        <tr>
-            <th>Course Name</th>
-            <th>Course Code</th>
-            <th>Language</th>
-            <th>Teacher</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Location</th>
-            <th>Duration</th>
-            <th>Operation</th>
-        </tr>
-        <tr th:each="course: ${courses}">
-            <th th:text="${course.getCourseName()}"></th>
-            <th th:text="${course.getCode()}"></th>
-            <th th:text="${course.getCourseLanguage()}"></th>
-            <th th:text="${course.getTeacher()}"></th>
-            <th th:text="${course.getDate()}"></th>
-            <th th:text="${course.getTime()}"></th>
-            <th th:text="${course.getCourseLocation()}"></th>
-            <th th:text="${course.getDuration()} + 'h'"></th>
-            <th>
-                <button type="button" class="delete-btn">
-                    Delete
-                </button>
-                <button type="button" class="edit-btn">
-                    Edit
-                </button>
-            </th>
-            <script th:inline="javascript">
-                $(".delete-btn").click(function () {
-                    let courseId = [[${course.getCourseId()}]].toString();
-                    $.ajax({
-                        url: "delete",
-                        type: "GET",
-                        data: {keyword: courseId},
-                        dataType: "json",
-                        success: function (json) {
-                            if (json.state === 200){
-                                alert("Successfully Delete!");
-                                location.href = "course.html";
-                            }
+<h1>Open Courses</h1>
+<table border="1">
+    <tr>
+        <th>Course Name</th>
+        <th>Course Code</th>
+        <th>Language</th>
+        <th>Teacher</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Location</th>
+        <th>Duration</th>
+        <th>Operation</th>
+    </tr>
+    <tr th:each="course: ${courses}">
+        <th th:text="${course.getCourseName()}"></th>
+        <th th:text="${course.getCode()}"></th>
+        <th th:text="${course.getCourseLanguage()}"></th>
+        <th th:text="${course.getTeacher()}"></th>
+        <th th:text="${course.getDate()}"></th>
+        <th th:text="${course.getTime()}"></th>
+        <th th:text="${course.getCourseLocation()}"></th>
+        <th th:text="${course.getDuration()} + 'h'"></th>
+        <th>
+            <button type="button" class="delete-btn">
+                Delete
+            </button>
+            <button type="button" class="edit-btn">
+                Edit
+            </button>
+        </th>
+        <script th:inline="javascript">
+            $(".delete-btn").click(function () {
+                let courseId = [[${course.getCourseId()}]].toString();
+                $.ajax({
+                    url: "delete",
+                    type: "GET",
+                    data: {keyword: courseId},
+                    dataType: "json",
+                    success: function (json) {
+                        if (json.state === 200) {
+                            alert("Successfully Delete!");
+                            location.href = "course.html";
                         }
-                    })
+                    }
                 })
-            </script>
-        </tr>
-    </table>
-    <br/>
-    <button type="button">Add Class</button>
+            })
+        </script>
+    </tr>
+</table>
+<br/>
+<button type="button" onclick="show()">Add Class</button>
+<div id="addClassDialog">
+    <form action="/course/add" method="post">
+        <div class="add-item"><input type="text" name="name" placeholder="Course Name"/></div>
+        <div class="add-item"><input type="text" name="code" placeholder="Course Code"/></div>
+        <div class="add-item"><input type="text" name="language" placeholder="Language"/></div>
+        <div class="add-item"><input type="text" name="teacher" placeholder="Teacher"/></div>
+        <div class="add-item"><input type="date" name="date"/></div>
+        <div class="add-item"><input type="time" name="time"/></div>
+        <div class="add-item"><input type="text" name="location" placeholder="Location"/></div>
+        <div class="add-item"><input type="text" name="duration" placeholder="Duration"
+                                     onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"/></div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
 </body>
+
+<script>
+    function show() {
+        layer.open({
+            type: 1,
+            title: "Add Class",
+            area: ["400px", "500px"],
+            content: $("#addClassDialog"),
+        });
+    }
+</script>
 </html>

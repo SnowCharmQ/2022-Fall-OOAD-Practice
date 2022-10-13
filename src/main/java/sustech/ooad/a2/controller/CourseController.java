@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import sustech.ooad.a2.entity.CourseEntity;
 import sustech.ooad.a2.service.CourseService;
 import sustech.ooad.a2.utils.JsonResult;
+import sustech.ooad.a2.vo.CourseVo;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Controller
@@ -22,6 +24,12 @@ public class CourseController {
         List<CourseEntity> list = courseService.list();
         model.addAttribute("courses", list);
         return "course";
+    }
+
+    @RequestMapping("/add")
+    public String add(CourseVo vo) throws ParseException {
+        courseService.add(vo);
+        return "redirect:course.html";
     }
 
     @ResponseBody
