@@ -47,7 +47,12 @@
     }
 </style>
 <body>
-<h1>Open Courses</h1>
+<h1>Open Courses</h1><br/>
+<form action="/course/search" method="post">
+    Course Code: <input type="text" name="code" placeholder="Course Code">
+    Date: <input type="date" name="date" min="1970-01-01" max="2050-01-01" step="any" style="width: 100px;"/>
+    <button type="submit">Search</button>
+</form>
 <table border="1">
     <tr>
         <th>Course Name</th>
@@ -107,8 +112,8 @@
         <div class="add-item"><input id="code-input" type="text" name="code" placeholder="Course Code"/></div>
         <div class="add-item"><input id="language-input" type="text" name="language" placeholder="Language"/></div>
         <div class="add-item"><input id="teacher-input" type="text" name="teacher" placeholder="Teacher"/></div>
-        <div class="add-item"><input id="date-input" type="date" name="date"/></div>
-        <div class="add-item"><input id="time-input" type="time" name="time"/></div>
+        <div class="add-item"><input id="date-input" type="date" name="date" min="1970-01-01" max="2050-01-01" step="any"/></div>
+        <div class="add-item"><input id="time-input" type="time" name="time" min="00:00:00" max="23:59:59" step="any"/></div>
         <div class="add-item"><input id="location-input" type="text" name="location" placeholder="Location"/></div>
         <div class="add-item"><input id="duration-input" type="text" name="duration" placeholder="Duration"
                                      onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"/></div>

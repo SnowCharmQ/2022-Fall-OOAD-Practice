@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sustech.ooad.a2.mapper.CourseDao">
+    <select id="selectByCode" resultType="sustech.ooad.a2.entity.CourseEntity">
+        select * from t_course where code = #{code};
+    </select>
+    <select id="selectByDate" resultType="sustech.ooad.a2.entity.CourseEntity">
+        select * from t_course where to_char(course_time, 'yyyy-MM-dd') = #{date};
+    </select>
+    <select id="selectByCodeAndDate" resultType="sustech.ooad.a2.entity.CourseEntity">
+        select * from t_course where code = #{code} and to_char(course_time, 'yyyy-MM-dd') = #{date};
+    </select>
+</mapper>
