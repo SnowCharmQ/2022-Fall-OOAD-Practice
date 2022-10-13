@@ -9,4 +9,6 @@ import java.text.ParseException;
 public interface CourseService extends IService<CourseEntity> {
 
     void add(CourseVo vo) throws ParseException;
+
+    void update(CourseVo vo) throws ParseException;
 }

@@ -32,6 +32,12 @@ public class CourseController {
         return "redirect:course.html";
     }
 
+    @RequestMapping("/update")
+    public String update(CourseVo vo) throws ParseException {
+        courseService.update(vo);
+        return "redirect:course.html";
+    }
+
     @ResponseBody
     @RequestMapping("/delete")
     public JsonResult<Void> delete(@RequestParam("keyword") String id) {

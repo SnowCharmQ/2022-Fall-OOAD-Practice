@@ -13,6 +13,10 @@
         display: none;
     }
 
+    #updateClassDialog {
+        display: none;
+    }
+
     #addClassDialog button {
         width: 200px;
         height: 40px;
@@ -25,8 +29,20 @@
         text-decoration: none;
     }
 
+    #updateClassDialog button {
+        width: 200px;
+        height: 40px;
+        background: #00897B;
+        display: block;
+        font-size: 16px;
+        color: #fff;
+        line-height: 50px;
+        text-align: center;
+        text-decoration: none;
+    }
+
     .add-item {
-        width: 400px;
+        width: 480px;
         height: 46px;
     }
 </style>
@@ -54,44 +70,47 @@
         <th th:text="${course.getCourseLocation()}"></th>
         <th th:text="${course.getDuration()} + 'h'"></th>
         <th>
-            <button type="button" class="delete-btn">
+            <button type="button" th:onclick="del([[${course.getCourseId()}]])">
                 Delete
             </button>
-            <button type="button" class="edit-btn">
+            <button type="button" class="edit-btn"
+                    th:onclick="update([[${course.getCourseId()}]], [[${course.getCourseName()}]],
+                    [[${course.getCode()}]], [[${course.getCourseLanguage()}]], [[${course.getTeacher()}]],
+                    [[${course.getDate()}]], [[${course.getTime()}]]), [[${course.getCourseLocation()}]],
+                    [[${course.getDuration()}]]">
                 Edit
             </button>
         </th>
-        <script th:inline="javascript">
-            $(".delete-btn").click(function () {
-                let courseId = [[${course.getCourseId()}]].toString();
-                $.ajax({
-                    url: "delete",
-                    type: "GET",
-                    data: {keyword: courseId},
-                    dataType: "json",
-                    success: function (json) {
-                        if (json.state === 200) {
-                            alert("Successfully Delete!");
-                            location.href = "course.html";
-                        }
-                    }
-                })
-            })
-        </script>
     </tr>
 </table>
 <br/>
-<button type="button" onclick="show()">Add Class</button>
+<button type="button" onclick="showAdd()">Add Class</button>
 <div id="addClassDialog">
     <form action="/course/add" method="post">
+        <input type="hidden" name="id"/>
         <div class="add-item"><input type="text" name="name" placeholder="Course Name"/></div>
         <div class="add-item"><input type="text" name="code" placeholder="Course Code"/></div>
         <div class="add-item"><input type="text" name="language" placeholder="Language"/></div>
         <div class="add-item"><input type="text" name="teacher" placeholder="Teacher"/></div>
-        <div class="add-item"><input type="date" name="date"/></div>
-        <div class="add-item"><input type="time" name="time"/></div>
+        <div class="add-item"><input type="date" name="date" min="1970-01-01" max="2050-01-01" step="any"/></div>
+        <div class="add-item"><input type="time" name="time" min="00:00:00" max="23:59:59" step="any"/></div>
         <div class="add-item"><input type="text" name="location" placeholder="Location"/></div>
         <div class="add-item"><input type="text" name="duration" placeholder="Duration"
+                                     onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"/></div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+<div id="updateClassDialog">
+    <form action="/course/update" method="post">
+        <input type="hidden" name="id" id="id-input"/>
+        <div class="add-item"><input id="name-input" type="text" name="name" placeholder="Course Name"/></div>
+        <div class="add-item"><input id="code-input" type="text" name="code" placeholder="Course Code"/></div>
+        <div class="add-item"><input id="language-input" type="text" name="language" placeholder="Language"/></div>
+        <div class="add-item"><input id="teacher-input" type="text" name="teacher" placeholder="Teacher"/></div>
+        <div class="add-item"><input id="date-input" type="date" name="date"/></div>
+        <div class="add-item"><input id="time-input" type="time" name="time"/></div>
+        <div class="add-item"><input id="location-input" type="text" name="location" placeholder="Location"/></div>
+        <div class="add-item"><input id="duration-input" type="text" name="duration" placeholder="Duration"
                                      onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"/></div>
         <button type="submit">Submit</button>
     </form>
@@ -99,12 +118,45 @@
 </body>
 
 <script>
-    function show() {
+    function showAdd() {
         layer.open({
             type: 1,
             title: "Add Class",
-            area: ["400px", "500px"],
+            area: ["480px", "500px"],
             content: $("#addClassDialog"),
+        });
+    }
+
+    function del(courseId) {
+        $.ajax({
+            url: "delete",
+            type: "GET",
+            data: {keyword: courseId},
+            dataType: "json",
+            success: function (json) {
+                if (json.state === 200) {
+                    alert("Successfully Delete!");
+                    location.href = "course.html";
+                }
+            }
+        })
+    }
+
+    function update(id, name, code, language, teacher, date, time, location, duration) {
+        $("#id-input").val(id.toString());
+        $("#name-input").val(name == null ? '' : name.toString());
+        $("#code-input").val(code == null ? '' : code.toString());
+        $("#language-input").val(language == null ? '' : language.toString());
+        $("#teacher-input").val(teacher == null ? '' : teacher.toString());
+        $("#date-input").val(date);
+        $("#time-input").val(time);
+        $("#location-input").val(location == null ? '' : location.toString());
+        $("#duration-input").val(duration);
+        layer.open({
+            type: 1,
+            title: "Update Class",
+            area: ["400px", "500px"],
+            content: $("#updateClassDialog")
         });
     }
 </script>

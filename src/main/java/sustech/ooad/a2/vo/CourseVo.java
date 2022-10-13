@@ -6,6 +6,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class CourseVo {
+    private String id;
     private String name;
     private String code;
     private String language;
