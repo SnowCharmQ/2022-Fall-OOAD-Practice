@@ -14,7 +14,6 @@ import sustech.ooad.a2.utils.JsonResult;
 import sustech.ooad.a2.vo.CourseVo;
 import sustech.ooad.a2.vo.SearchVo;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.List;
 

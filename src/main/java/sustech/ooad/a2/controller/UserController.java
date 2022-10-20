@@ -3,6 +3,7 @@ package sustech.ooad.a2.controller;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,10 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/login.html")
-    public String login() {
+    public String login(String username, Model model) {
+        if (username != null) {
+            model.addAttribute("username", username);
+        }
         return "login";
     }
 
@@ -51,21 +55,21 @@ public class UserController {
             entity.setUsername(user.getUsername());
             entity.setPwd(user.getPwd());
             userService.save(entity);
-            return "redirect:login.html";
+            return "redirect:login.html?username=" + user.getUsername();
         }
     }
 
     @PostMapping("/login")
     public String login(UserEntity user, RedirectAttributes attributes, HttpSession session) {
         Map<String, String> errors = new HashMap<>();
-        if (user.getUsername() == null || StringUtils.isEmpty(user.getUsername())){
+        if (user.getUsername() == null || StringUtils.isEmpty(user.getUsername())) {
             errors.put("user", "Please enter your username");
         }
-        if (user.getPwd() == null || StringUtils.isEmpty(user.getPwd())){
+        if (user.getPwd() == null || StringUtils.isEmpty(user.getPwd())) {
             errors.put("pwd", "Please enter your password");
         }
         if (errors.isEmpty()) {
-            if (userService.checkLogin(user)){
+            if (userService.checkLogin(user)) {
                 errors.put("check", "Wrong username or password");
                 attributes.addFlashAttribute("errors", errors);
                 return "redirect:login.html";

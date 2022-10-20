@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <script src="/bootstrap3/js/holder.js"></script>
+    <script src="/bootstrap3/jquery-1.9.1.min.js"></script>
+    <script src="/bootstrap3/js/bootstrap.js"></script>
+    <script src="/3.1.1/layer.js"></script>
 </head>
 <body>
 <form action="/user/login" method="post">
-    <label>Username </label><label><input type="text" placeholder="Username" name="username"></label><br/>
+    <label>Username </label><label><input type="text" placeholder="Username" name="username"
+                                          id="username-input"></label><br/>
     <p th:text="${errors!=null?(#maps.containsKey(errors, 'user')?errors.user:''):''}" style="color: red;"></p><br/>
     <label>Password </label><label><input type="password" placeholder="Password" name="pwd"></label><br/>
     <p th:text="${errors!=null?(#maps.containsKey(errors, 'pwd')?errors.pwd:''):''}" style="color: red;"></p><br/>
@@ -15,4 +20,13 @@
     <a href="reg.html">Register now</a>
 </form>
 </body>
+<script>
+    window.onload = function () {
+        let param = location.search;
+        param = param.replace("?", "")
+        let username = param.split("=");
+        username = username[1];
+        $("#username-input").val(username);
+    }
+</script>
 </html>
