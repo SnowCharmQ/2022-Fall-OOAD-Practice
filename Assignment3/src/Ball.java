@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class Ball extends JComponent {
+public abstract class Ball extends JComponent {
     private Color color;
     private int x, y;
     private int xSpeed, ySpeed;
@@ -23,6 +23,10 @@ public class Ball extends JComponent {
 
         this.setSize(ballSize, ballSize);
     }
+
+    public abstract void update(Ball ball);
+
+    public abstract void update(char keyChar, MainPanel.GameStatus status);
 
     public static int getCount() {
         return count;
@@ -134,6 +138,11 @@ public class Ball extends JComponent {
         draw(g);
     }
 
+    public boolean isIntersect(Ball ball) {
+        int dis = (this.getWidth() + ball.getWidth()) / 2;
+        double diffXPow = Math.pow(this.convertToCentralX() - ball.convertToCentralX(), 2);
+        double diffYPow = Math.pow(this.convertToCentralY() - ball.convertToCentralY(), 2);
+        return diffXPow + diffYPow < dis * dis;
+    }
 
 }
-

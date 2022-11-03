@@ -4,10 +4,36 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class MainPanel extends JPanel implements KeyListener {
-    private List<Ball> paintingBallList = new ArrayList<>();//后续会添加红球，蓝球
+public class MainPanel extends JPanel implements KeyListener, Subject<Ball> {
+    private List<Ball> paintingBallList = new ArrayList<>();
+    private List<Ball> observers;
+
+
+    @Override
+    public void registerObserver(Ball ball) {
+        observers.add(ball);
+    }
+
+    @Override
+    public void removeObserver(Ball ball) {
+        int i = observers.indexOf(ball);
+        if (i >= 0) {
+            observers.remove(i);
+        }
+    }
+
+    @Override
+    public void notifyObservers(char keyChar) {
+        for (Ball observer : observers) {
+            observer.update(keyChar, gameStatus);
+        }
+    }
+
+    @Override
+    public void notifyObservers() {
+
+    }
 
     enum GameStatus {PREPARING, START, STOP}
 
@@ -15,7 +41,6 @@ public class MainPanel extends JPanel implements KeyListener {
     private int score;
     private Ball whiteBall;
     private Ball whiteBallRandom;
-    Random random = new Random();
     Timer t;
 
     public MainPanel() {
@@ -26,6 +51,7 @@ public class MainPanel extends JPanel implements KeyListener {
         this.addKeyListener(this);
         t = new Timer(50, e -> moveBalls());
         restartGame();
+        this.observers = new ArrayList<>();
     }
 
 
@@ -51,7 +77,7 @@ public class MainPanel extends JPanel implements KeyListener {
     }
 
     public boolean isIntersect(Ball a, Ball b) {
-        int dis = (this.getWidth() + b.getWidth()) / 2;
+        int dis = (a.getWidth() + b.getWidth()) / 2;
         double diffXPow = Math.pow(a.convertToCentralX() - b.convertToCentralX(), 2);
         double diffYPow = Math.pow(a.convertToCentralY() - b.convertToCentralY(), 2);
         return diffXPow + diffYPow < dis * dis;
@@ -60,9 +86,16 @@ public class MainPanel extends JPanel implements KeyListener {
     public void restartGame() {
         gameStatus = GameStatus.PREPARING;
         if (this.paintingBallList.size() > 0) {
-            paintingBallList.forEach(this::remove);//使所有的ball与panel解绑
+            paintingBallList.forEach(this::remove);
         }
         this.paintingBallList = new ArrayList<>();
+        this.observers = new ArrayList<>();
+        this.observers.add(whiteBall);
+        WhiteRandomBall ball = this.getWhiteBallRandom();
+        if (ball != null) {
+            ball.setObservers(new ArrayList<>());
+        }
+
         Ball.setCount(0);
         this.score = 100;
         if (this.whiteBall != null)
@@ -80,6 +113,10 @@ public class MainPanel extends JPanel implements KeyListener {
         add(whiteBall);
     }
 
+    public WhiteRandomBall getWhiteBallRandom(){
+        return (WhiteRandomBall) this.whiteBallRandom;
+    }
+
     public void setWhiteBallRandom(Ball whiteBallRandom) {
         this.whiteBallRandom = whiteBallRandom;
         this.whiteBallRandom.setVisible(false);
@@ -92,7 +129,6 @@ public class MainPanel extends JPanel implements KeyListener {
             score--;
             whiteBall.move();
             whiteBallRandom.move();
-
         }
         repaint();
     }
@@ -136,44 +172,7 @@ public class MainPanel extends JPanel implements KeyListener {
     public void keyPressed(KeyEvent e) {
         char keyChar = e.getKeyChar();
         System.out.println("Press: " + keyChar);
-
-        for (Ball ball : paintingBallList) {
-            if (ball.getColor() == Color.RED) {
-                switch (keyChar) {
-                    case 'a':
-                        ball.setXSpeed(-random.nextInt(3) - 1);
-                        break;
-                    case 'd':
-                        ball.setXSpeed(random.nextInt(3) + 1);
-                        break;
-                    case 'w':
-                        ball.setYSpeed(-random.nextInt(3) - 1);
-                        break;
-                    case 's':
-                        ball.setYSpeed(random.nextInt(3) + 1);
-                }
-            } else if (ball.getColor() == Color.BLUE) {
-                ball.setXSpeed(-1 * ball.getXSpeed());
-                ball.setYSpeed(-1 * ball.getYSpeed());
-            }
-        }
-
-        if (gameStatus == GameStatus.START) {
-            switch (keyChar) {
-                case 'a':
-                    whiteBall.setXSpeed(-8);
-                    break;
-                case 'd':
-                    whiteBall.setXSpeed(8);
-                    break;
-                case 'w':
-                    whiteBall.setYSpeed(-8);
-                    break;
-                case 's':
-                    whiteBall.setYSpeed(8);
-                    break;
-            }
-        }
+        notifyObservers(keyChar);
     }
 
     @Override
