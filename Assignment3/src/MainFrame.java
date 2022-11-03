@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class MainFrame extends JFrame {
     ButtonPanel buttonPanel;
@@ -37,6 +38,7 @@ public class MainFrame extends JFrame {
         mainPanel.setWhiteBall(whiteBall);
         mainPanel.registerObserver(whiteBall);
         mainPanel.setWhiteBallRandom(new WhiteRandomBall());
+        mainPanel.getWhiteBallRandom().setObservers(new ArrayList<>());
         Ball.setCount(0);
 
         red.addActionListener(l -> {

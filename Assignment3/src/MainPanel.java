@@ -65,6 +65,7 @@ public class MainPanel extends JPanel implements KeyListener, Subject<Ball> {
         gameStatus = GameStatus.STOP;
         this.t.stop();
         paintingBallList.forEach(b -> {
+            b.setVisible(true);
             if (isIntersect(b, whiteBall)) {
                 if (b.getColor() == Color.RED) {
                     scoreIncrement(80);
@@ -86,7 +87,10 @@ public class MainPanel extends JPanel implements KeyListener, Subject<Ball> {
     public void restartGame() {
         gameStatus = GameStatus.PREPARING;
         if (this.paintingBallList.size() > 0) {
-            paintingBallList.forEach(this::remove);
+            paintingBallList.forEach(o -> {
+                observers.remove(o);
+                this.remove(o);
+            });
         }
         this.paintingBallList = new ArrayList<>();
         this.observers = new ArrayList<>();
