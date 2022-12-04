@@ -17,8 +17,8 @@ public class BeanFactoryLocalTest {
     @BeforeEach
     public void setup() {
         this.beanFactory = new BeanFactoryImpl();
-        beanFactory.loadInjectProperties(new File("local-inject.properties"));
-        beanFactory.loadValueProperties(new File("local-value.properties"));
+        beanFactory.loadInjectProperties(new File("Assignment5/local-inject.properties"));
+        beanFactory.loadValueProperties(new File("Assignment5/local-value.properties"));
     }
 
     @Test
