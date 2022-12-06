@@ -1,7 +1,10 @@
 package dependency_injection;
 
 import java.io.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 public class BeanFactoryImpl implements BeanFactory {
@@ -96,8 +99,8 @@ public class BeanFactoryImpl implements BeanFactory {
                     else if (type == List.class) instance = new ArrayList<>();
                     else if (type == Set.class) instance = new HashSet<>();
                     else if (type == Map.class) instance = new HashMap<>();
-                    else if (type == boolean.class) instance = false;
-                    else if (type == int.class) instance = 0;
+                    else if (type == boolean.class || type == Boolean.class) instance = false;
+                    else if (type == int.class || type == Integer.class) instance = 0;
                     else if (type == String.class) instance = "";
                     else instance = createInstance(type);
                     objects[i] = instance;
@@ -106,7 +109,6 @@ public class BeanFactoryImpl implements BeanFactory {
             Object object = constructor.newInstance(objects);
             Field[] fields = object.getClass().getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
-                boolean flag = false;
                 Field f = fields[i];
                 f.setAccessible(true);
                 Value valueAnnotation = f.getAnnotation(Value.class);
@@ -122,42 +124,24 @@ public class BeanFactoryImpl implements BeanFactory {
                     if (type.isArray()) {
                         Object[] array = ParseFactory.parseArray(f, split);
                         f.set(object, array);
-                        flag = true;
                     } else if (type == List.class) {
                         List<Object> list = ParseFactory.parseList(f, split);
                         f.set(object, list);
-                        flag = true;
                     } else if (type == Set.class) {
                         Set<Object> set = ParseFactory.parseSet(f, split);
                         f.set(object, set);
-                        flag = true;
                     } else if (type == Map.class) {
                         Map<Object, Object> map = ParseFactory.parseMap(f, split);
                         f.set(object, map);
-                        flag = true;
                     } else {
                         for (String s : split) {
                             Object o = ParseFactory.parseType(f.getType(), s);
                             if (o != null) {
                                 f.set(object, o);
-                                flag = true;
                                 break;
                             }
                         }
                     }
-                }
-                if (!flag) {
-                    Object instance;
-                    Class<?> type = f.getType();
-                    if (type.isArray()) instance = new Object[0];
-                    else if (type == List.class) instance = new ArrayList<>();
-                    else if (type == Set.class) instance = new HashSet<>();
-                    else if (type == Map.class) instance = new HashMap<>();
-                    else if (type == boolean.class) instance = false;
-                    else if (type == int.class) instance = 0;
-                    else if (type == String.class) instance = "";
-                    else instance = createInstance(type);
-                    f.set(object, instance);
                 }
                 f.setAccessible(false);
             }
@@ -182,18 +166,19 @@ class ParseFactory {
     }
 
     public static <T> T[] parseArray(Class<?> clazz, String[] values) {
-        if (clazz == boolean[].class) {
+        if (clazz == boolean[].class || clazz == Boolean[].class) {
             List<Boolean> list = handleBoolean(values);
             return (T[]) list.toArray();
-        } else if (clazz == int[].class) {
+        } else if (clazz == int[].class || clazz == Integer[].class) {
             List<Integer> list = handleInteger(values);
             return (T[]) list.toArray();
         } else if (clazz == String[].class) return (T[]) values;
         return null;
     }
 
-    public static <T> List<T> parseList(Field f, String[] values) {
-        Class<? extends Type> geneticType = f.getGenericType().getClass();
+    public static <T> List<T> parseList(Field f, String[] values) throws ClassNotFoundException {
+        Class<?> geneticType = Class.forName(((ParameterizedType) f.getGenericType())
+                .getActualTypeArguments()[0].getTypeName());
         return parseList(geneticType, values);
     }
 
@@ -204,14 +189,15 @@ class ParseFactory {
     }
 
     public static <T> List<T> parseList(Class<?> geneticType, String[] values) {
-        if (geneticType == boolean.class) return (List<T>) handleBoolean(values);
-        else if (geneticType == int.class) return (List<T>) handleInteger(values);
+        if (geneticType == boolean.class || geneticType == Boolean.class) return (List<T>) handleBoolean(values);
+        else if (geneticType == int.class || geneticType == Integer.class) return (List<T>) handleInteger(values);
         else if (geneticType == String.class) return (List<T>) Arrays.asList(values);
         return new ArrayList<>();
     }
 
-    public static <T> Set<T> parseSet(Field f, String[] values) {
-        Class<? extends Type> geneticType = f.getGenericType().getClass();
+    public static <T> Set<T> parseSet(Field f, String[] values) throws ClassNotFoundException {
+        Class<?> geneticType = Class.forName(((ParameterizedType) f.getGenericType())
+                .getActualTypeArguments()[0].getTypeName());
         return parseSet(geneticType, values);
     }
 
@@ -222,11 +208,11 @@ class ParseFactory {
     }
 
     public static <T> Set<T> parseSet(Class<?> geneticType, String[] values) {
-        if (geneticType == boolean.class) {
+        if (geneticType == boolean.class || geneticType == Boolean.class) {
             List<Boolean> list = handleBoolean(values);
             Set<Boolean> set = new HashSet<>(list);
             return (Set<T>) set;
-        } else if (geneticType == int.class) {
+        } else if (geneticType == int.class || geneticType == Integer.class) {
             List<Integer> list = handleInteger(values);
             Set<Integer> set = new HashSet<>(list);
             return (Set<T>) set;
@@ -276,14 +262,14 @@ class ParseFactory {
     }
 
     public static <T> T parseType(Class<?> clazz, String str) {
-        if (clazz == int.class) {
+        if (clazz == int.class || clazz == Integer.class) {
             try {
                 Integer i = Integer.parseInt(str);
                 return (T) i;
             } catch (NumberFormatException ignored) {
                 return null;
             }
-        } else if (clazz == boolean.class) {
+        } else if (clazz == boolean.class || clazz == Boolean.class) {
             str = str.toLowerCase();
             if (Objects.equals(str, "true")) return (T) Boolean.TRUE;
             if (Objects.equals(str, "false")) return (T) Boolean.FALSE;
