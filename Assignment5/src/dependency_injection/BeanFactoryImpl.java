@@ -112,6 +112,7 @@ public class BeanFactoryImpl implements BeanFactory {
                 Field f = fields[i];
                 f.setAccessible(true);
                 Value valueAnnotation = f.getAnnotation(Value.class);
+                Inject injectAnnotation = f.getAnnotation(Inject.class);
                 if (valueAnnotation != null) {
                     String value = valueAnnotation.value();
                     if (valueMap.containsKey(value)) value = valueMap.get(value);
@@ -122,8 +123,7 @@ public class BeanFactoryImpl implements BeanFactory {
                         value = value.substring(1, value.length() - 1);
                     String[] split = value.split(delimiter);
                     if (type.isArray()) {
-                        Object[] array = ParseFactory.parseArray(f, split);
-                        f.set(object, array);
+                        ParseFactory.setArray(f, split, object);
                     } else if (type == List.class) {
                         List<Object> list = ParseFactory.parseList(f, split);
                         f.set(object, list);
@@ -143,6 +143,10 @@ public class BeanFactoryImpl implements BeanFactory {
                         }
                     }
                 }
+                if (injectAnnotation != null) {
+                    Class<?> type = f.getType();
+                    f.set(object, createInstance(type));
+                }
                 f.setAccessible(false);
             }
             return (T) object;
@@ -155,9 +159,22 @@ public class BeanFactoryImpl implements BeanFactory {
 
 class ParseFactory {
 
-    public static <T> T[] parseArray(Field f, String[] values) {
+    public static void setArray(Field f, String[] values, Object object) throws IllegalAccessException {
         Class<?> clazz = f.getType();
-        return parseArray(clazz, values);
+        if (clazz == boolean[].class || clazz == Boolean[].class) {
+            List<Boolean> list = handleBoolean(values);
+            boolean[] booleans = new boolean[list.size()];
+            for (int i = 0; i < booleans.length; i++) booleans[i] = list.get(i);
+            f.set(object, booleans);
+        } else if (clazz == int[].class || clazz == Integer[].class) {
+            List<Integer> list = handleInteger(values);
+            int[] ints = new int[list.size()];
+            for (int i = 0;i < ints.length;i++) ints[i] = list.get(i);
+            f.set(object, ints);
+        } else if (clazz == String[].class) {
+            List<String> list = Arrays.asList(values);
+            f.set(object, list.toArray(new String[0]));
+        }
     }
 
     public static <T> T[] parseArray(Parameter p, String[] values) {
@@ -256,7 +273,7 @@ class ParseFactory {
             }
             K mapKey = parseType(keyClass, key);
             V mapVal = parseType(valClass, val);
-            map.put(mapKey, mapVal);
+            if (mapKey != null && mapVal != null) map.put(mapKey, mapVal);
         }
         return map;
     }
