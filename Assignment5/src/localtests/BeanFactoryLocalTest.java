@@ -138,5 +138,13 @@ public class BeanFactoryLocalTest {
         assertEquals("notest", instance.getS());
     }
 
-
+    @Test
+    public void test1() {
+        N instance = beanFactory.createInstance(N.class);
+        assertNotNull(instance);
+        assertEquals(0, instance.getSet().size());
+        assertEquals(0, instance.getAnInt());
+        assertEquals(0, instance.getList().size());
+        assertFalse(instance.isaBoolean());
+    }
 }
