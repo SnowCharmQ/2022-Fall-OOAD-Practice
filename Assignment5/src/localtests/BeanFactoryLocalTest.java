@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import testclass.*;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -146,5 +147,34 @@ public class BeanFactoryLocalTest {
         assertEquals(0, instance.getAnInt());
         assertEquals(0, instance.getList().size());
         assertFalse(instance.isaBoolean());
+    }
+
+    @Test
+    public void test2() {
+        O instance = beanFactory.createInstance(O.class);
+        assertNotNull(instance);
+        System.out.println(Arrays.toString(instance.getArr1()));
+        System.out.println(Arrays.toString(instance.getArr2()));
+        System.out.println(Arrays.toString(instance.getArr3()));
+        System.out.println(Arrays.toString(instance.getArr4()));
+    }
+
+    @Test
+    public void test3() {
+        P instance = beanFactory.createInstance(P.class);
+        assertNotNull(instance);
+        System.out.println(instance.getTest1());
+        System.out.println(instance.getTest2());
+        System.out.println(Arrays.toString(instance.getTest3()));
+        System.out.println(instance.getTest4());
+    }
+
+    @Test
+    public void test4() {
+        Q instance = beanFactory.createInstance(Q.class);
+        assertNotNull(instance);
+        System.out.println(instance.getTest1());
+        System.out.println(Arrays.toString(instance.getTest2()));
+        System.out.println(Arrays.toString(instance.getTest3()));
     }
 }
