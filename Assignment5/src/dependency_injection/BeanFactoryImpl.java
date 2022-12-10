@@ -1,6 +1,9 @@
 package dependency_injection;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
@@ -9,47 +12,41 @@ import java.util.*;
 
 public class BeanFactoryImpl implements BeanFactory {
 
-    private Map<String, String> injectMap = new HashMap<>();
-    private Map<String, String> valueMap = new HashMap<>();
+    private Properties injectProperties = new Properties();
+    private Properties valueProperties = new Properties();
 
-    public void loadProperties(File file, Map<String, String> map) {
+    @Override
+    public void loadInjectProperties(File file) {
         try {
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] strings = line.split("=");
-                if (strings.length != 2) continue;
-                map.put(strings[0], strings[1]);
-            }
+            InputStream is = new FileInputStream(file);
+            injectProperties.load(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void loadInjectProperties(File file) {
-        loadProperties(file, injectMap);
-    }
-
-    @Override
     public void loadValueProperties(File file) {
-        loadProperties(file, valueMap);
+        try {
+            InputStream is = new FileInputStream(file);
+            valueProperties.load(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public <T> T createInstance(Class<T> clazz) {
         try {
             String className = clazz.getTypeName();
-            if (injectMap.containsKey(className)) clazz = (Class<T>) Class.forName(injectMap.get(className));
+            if (injectProperties.containsKey(className)) clazz = (Class<T>) Class.forName(injectProperties.getProperty(className));
             Constructor<?> constructor = null;
-            Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+            Constructor<?>[] constructors = clazz.getConstructors();
             for (Constructor<?> c : constructors) {
                 Inject injectAnnotation = c.getAnnotation(Inject.class);
                 if (injectAnnotation != null) constructor = c;
             }
-            if (constructor == null) constructor = clazz.getDeclaredConstructor();
+            if (constructor == null) constructor = clazz.getConstructor();
             Parameter[] parameters = constructor.getParameters();
             Object[] objects = new Object[parameters.length];
             for (int i = 0; i < objects.length; i++) {
@@ -58,7 +55,7 @@ public class BeanFactoryImpl implements BeanFactory {
                 Value valueAnnotation = p.getAnnotation(Value.class);
                 if (valueAnnotation != null) {
                     String value = valueAnnotation.value();
-                    if (valueMap.containsKey(value)) value = valueMap.get(value);
+                    if (valueProperties.containsKey(value)) value = valueProperties.getProperty(value);
                     String delimiter = valueAnnotation.delimiter();
                     if (delimiter == null) delimiter = ",";
                     Class<?> type = p.getType();
@@ -66,8 +63,16 @@ public class BeanFactoryImpl implements BeanFactory {
                         value = value.substring(1, value.length() - 1);
                     String[] split = value.split(delimiter);
                     if (type.isArray()) {
-                        Object[] array = ParseFactory.parseArray(p, split);
-                        objects[i] = array;
+                        if (type.getComponentType() == boolean.class || type.getComponentType() == Boolean.class) {
+                            boolean[] array = ParseFactory.parseBooleanArray(split);
+                            objects[i] = array;
+                        }else if (type.getComponentType() == int.class || type.getComponentType() == Integer.class) {
+                            int[] array = ParseFactory.parseIntArray(split);
+                            objects[i] = array;
+                        } else {
+                            String[] array = ParseFactory.parseStringArray(split);
+                            objects[i] = array;
+                        }
                         flag = true;
                     } else if (type == List.class) {
                         List<Object> list = ParseFactory.parseList(p, split);
@@ -114,7 +119,7 @@ public class BeanFactoryImpl implements BeanFactory {
                 Inject injectAnnotation = f.getAnnotation(Inject.class);
                 if (valueAnnotation != null) {
                     String value = valueAnnotation.value();
-                    if (valueMap.containsKey(value)) value = valueMap.get(value);
+                    if (valueProperties.containsKey(value)) value = valueProperties.getProperty(value);
                     String delimiter = valueAnnotation.delimiter();
                     if (delimiter == null) delimiter = ",";
                     Class<?> type = f.getType();
@@ -186,19 +191,27 @@ class ParseFactory {
         }
     }
 
-    public static <T> T[] parseArray(Parameter p, String[] values) {
-        Class<?> clazz = p.getType();
-        if (clazz == boolean[].class || clazz == Boolean[].class) {
-            List<Boolean> list = handleBoolean(values);
-            return (T[]) list.toArray(new Boolean[0]);
-        } else if (clazz == int[].class || clazz == Integer[].class) {
-            List<Integer> list = handleInteger(values);
-            return (T[]) list.toArray(new Integer[0]);
-        } else if (clazz == String[].class) {
-            if (values.length == 1 && Objects.equals(values[0], "")) return (T[]) new String[0];
-            else return (T[]) values;
+    public static boolean[] parseBooleanArray(String[] values) {
+        List<Boolean> list = handleBoolean(values);
+        boolean[] array = new boolean[list.size()];
+        for (int i = 0;i < array.length;i++) {
+            array[i] = list.get(i);
         }
-        return null;
+        return array;
+    }
+
+    public static int[] parseIntArray(String[] values) {
+        List<Integer> list = handleInteger(values);
+        int[] array = new int[list.size()];
+        for (int i = 0;i < array.length;i++) {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
+
+    public static String[] parseStringArray(String[] values) {
+        if (values.length == 1 && Objects.equals(values[0], "")) return new String[0];
+        else return values;
     }
 
     public static void setList(Field f, String[] values, Object object) throws ClassNotFoundException, IllegalAccessException {
