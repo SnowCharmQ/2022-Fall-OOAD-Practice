@@ -11,8 +11,8 @@
     <groupId>sustech.ooad</groupId>
     <artifactId>Assignment2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Assignment2</name>
-    <description>Assignment2</description>
+    <name>Backend</name>
+    <description>Backend</description>
     <packaging>jar</packaging>
     <properties>
         <java.version>17</java.version>

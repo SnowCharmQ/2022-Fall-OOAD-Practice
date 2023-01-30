@@ -16,7 +16,7 @@
         </plugins>
     </build>
     <modules>
-        <module>Assignment2</module>
+        <module>Backend</module>
     </modules>
     <dependencies>
         <dependency>
@@ -29,6 +29,6 @@
     <groupId>sustech.ooad</groupId>
     <artifactId>Assignments</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>2022-Fall-OOAD-Assignments</name>
-    <description>2022-Fall-OOAD-Assignments</description>
+    <name>2022-Fall-OOAD-Practice</name>
+    <description>2022-Fall-OOAD-Practice</description>
 </project>
