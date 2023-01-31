@@ -26,7 +26,8 @@ public class FileOperate implements FileOperateInterfaceV1 {
                 staffModel.setTitle(element.child(1).text());
                 staffModel.setEmail(element.child(2).text().replace("_AT_", "@"));
                 staffModel.setRoom(element.child(3).text());
-                staffModel.setLink(element.getElementsByClass("teacher-box-href").first().attr("href"));
+                if (element.getElementsByClass("tearcher-box-href").first() != null)
+                    staffModel.setLink(element.getElementsByClass("teacher-box-href").first().attr("href"));
                 list.add(staffModel);
             });
         } catch (IOException e) {
